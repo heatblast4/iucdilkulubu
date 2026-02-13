@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LC - Language Club</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: #050315;
+            line-height: 1.6;
+            background: #fbfbfe;
+        }
+
+        /* Navigasyon */
+        nav {
+            background: #274f8b;
+            padding: 0.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+        }
+
+        .logo {
+            grid-column: 1;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .logo-image {
+            height: 60px;
+            width: auto;
+            display: block;
+            object-fit: contain;
+        }
+
+        .nav-links {
+            grid-column: 2;
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s;
+            font-weight: 500;
+            padding: 5px 0;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #dedcff;
+            border-bottom: 2px solid white;
+        }
+
+        .page {
+            display: none;
+            min-height: 80vh;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Hero */
+        .hero {
+            background: #274f8b;
+            height: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            text-align: center;
+            color: white;
+            padding: 4rem 2rem 2rem 2rem;
+        }
+
+        .hero-tag {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 0.8rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .cta-button {
+            background: #a4bde0;
+            color: #050315;
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.3s;
+            display: inline-block;
+        }
+
+        .cta-button:hover {
+            background: #dedcff;
+            transform: translateY(-2px);
+        }
+
+        .secondary-cta {
+            background: rgba(255,255,255,0.15);
+            color: white;
+            border: 1px solid white;
+        }
+
+        /* Pillars Bölümü - Alt boşluk (padding-bottom) azaltıldı */
+        .pillars-section {
+            background: #fff;
+            margin-top: -80px;
+            position: relative;
+            z-index: 5;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
+            padding: 4rem 2rem 2.5rem 2rem; /* Üst 4rem, Yanlar 2rem, Alt 2.5rem */
+            width: 100%;
+        }
+
+        .pillars-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+            text-align: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .pillar-item h3 { color: #274f8b; margin-bottom: 0.5rem; }
+        .pillar-item p { font-size: 0.9rem; color: #555; }
+
+        /* Duyuru Tasarımı */
+        .announcements-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .announcement {
+            background: white;
+            border-radius: 12px;
+            border-left: 5px solid #274f8b;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .announcement.active {
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            border-left-color: #a4bde0;
+        }
+
+        .announcement-header {
+            padding: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .event-date-box {
+            background: #f0f4f8;
+            color: #274f8b;
+            padding: 0.5rem;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 80px;
+            font-weight: bold;
+        }
+
+        .event-date-box span {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            opacity: 0.8;
+        }
+
+        .announcement-title-group { flex-grow: 1; }
+        .announcement-title { font-size: 1.25rem; font-weight: 700; color: #274f8b; }
+        
+        .status-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        .status-upcoming { background: #e3f2fd; color: #1976d2; }
+        .status-new { background: #e8f5e9; color: #2e7d32; }
+
+        .announcement-content {
+            padding: 0 1.5rem 1.5rem 7.5rem;
+            color: #444;
+            display: none;
+        }
+
+        .announcement.active .announcement-content { display: block; }
+        .arrow { transition: transform 0.3s; font-size: 0.8rem; }
+        .announcement.active .arrow { transform: rotate(180deg); }
+
+        /* Yayınlar/Kartlar */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .card-content { padding: 1.5rem; }
+        .pub-tag { 
+            background: #274f8b; color: white; padding: 2px 8px; 
+            border-radius: 4px; font-size: 0.75rem; font-weight: bold; 
+        }
+
+        /* İletişim Formu */
+        .contact-form {
+            background: #dedcff;
+            padding: 2.5rem;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group { margin-bottom: 1.2rem; }
+        .form-group label { display: block; margin-bottom: 0.5rem; font-weight: 500; }
+        .form-group input, .form-group textarea {
+            width: 100%; padding: 0.8rem; border: none; border-radius: 6px;
+        }
+
+        /* Footer */
+        footer { 
+            background: #274f8b; 
+            color: white; 
+            padding: 2rem; 
+            text-align: left; 
+            margin-top: 4rem; 
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        @media (max-width: 1000px) {
+            .nav-container { display: flex; flex-direction: column; gap: 1rem; }
+            .logo-image { height: 50px; }
+            .hero h1 { font-size: 2.2rem; }
+            .cta-group { flex-direction: column; }
+            .hero { padding-top: 2rem; }
+            .announcement-content { padding-left: 1.5rem; }
+            .pillars-section { margin-top: 0; padding-bottom: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-container">
+            <a onclick="showPage('home')" class="logo">
+                <img src="logo.png" alt="LC Logo" class="logo-image">
+            </a>
+            <ul class="nav-links">
+                <li><a onclick="showPage('home')" id="nav-home" class="active">Home</a></li>
+                <li><a onclick="showPage('about')" id="nav-about">About the Club</a></li>
+                <li><a onclick="showPage('announcements')" id="nav-announcements">Announcements</a></li>
+                <li><a onclick="showPage('publications')" id="nav-publications">Publications</a></li>
+                <li><a onclick="showPage('contact')" id="nav-contact">Contact</a></li>
+            </ul>
+            <div style="grid-column: 3;"></div>
+        </div>
+    </nav>
+
+    <div id="home" class="page active">
+        <section class="hero">
+            <div class="hero-tag">Next Event: Dec 23</div>
+            <h1>Welcome to the Language Club</h1>
+            <p>Learn faster and have fun with our community.</p>
+            <div class="cta-group">
+                <a onclick="showPage('announcements')" class="cta-button">Join New Year Gathering</a>
+                <a onclick="showPage('publications')" class="cta-button secondary-cta">Latest Publications</a>
+            </div>
+        </section>
+
+        <section class="pillars-section">
+            <div class="pillars-grid">
+                <div class="pillar-item">
+                    <h3>Since 1994</h3>
+                    <p>A legacy of student-led literature and global connection.</p>
+                </div>
+                <div class="pillar-item">
+                    <h3>Multilingual</h3>
+                    <p>Engaging in diverse genres across 5+ major world languages.</p>
+                </div>
+                <div class="pillar-item">
+                    <h3>Active Community</h3>
+                    <p>Weekly mixers, social gatherings, and digital releases.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="about" class="page">
+        <section class="section" style="max-width: 1200px; margin: 0 auto; padding: 4rem 2rem;">
+            <h2 style="font-size: 2.5rem; color: #274f8b; text-align: center; margin-bottom: 2rem;">About the Club</h2>
+            <p style="max-width: 800px; margin: 0 auto; text-align: center;">
+                Founded in 1993 by students of the then Faculty of Letters, Department of English Language Teaching, the language club is a student organization that currently continues its activities under the Hasan Ali Yücel Faculty of Education, and draws its human resources from Istanbul University students who have strong social skills, self-confidence, and the ability to create added value for themselves and their field through sharing.
+            </p>
+        </section>
+    </div>
+
+    <div id="announcements" class="page">
+        <section class="section" style="max-width: 1200px; margin: 0 auto; padding: 4rem 2rem;">
+            <h2 style="font-size: 2.5rem; color: #274f8b; text-align: center; margin-bottom: 2rem;">Club Announcements</h2>
+            <div class="announcements-container">
+                <div class="announcement">
+                    <div class="announcement-header" onclick="toggleAnnouncement(this)">
+                        <div class="event-date-box"><span>Dec</span> 23</div>
+                        <div class="announcement-title-group">
+                            <div class="announcement-title">New Year Gathering</div>
+                            <span class="status-tag status-upcoming">Upcoming Event</span>
+                        </div>
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="announcement-content">
+                        <p>We’re decorating our Christmas tree, writing our wishes for the new year. Join us and hang your wish on the tree.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="publications" class="page">
+        <section class="section" style="max-width: 1200px; margin: 0 auto; padding: 4rem 2rem;">
+            <h2 style="font-size: 2.5rem; color: #274f8b; text-align: center; margin-bottom: 2rem;">Latest Publications</h2>
+            <div class="cards-grid" id="pub-container"></div>
+        </section>
+    </div>
+
+    <div id="contact" class="page">
+        <section class="section" style="max-width: 1200px; margin: 0 auto; padding: 4rem 2rem;">
+            <h2 style="font-size: 2.5rem; color: #274f8b; text-align: center; margin-bottom: 2rem;">Contact Us</h2>
+            <div class="contact-form">
+                <form>
+                    <div class="form-group"><label>Name</label><input type="text" required></div>
+                    <div class="form-group"><label>Email</label><input type="email" required></div>
+                    <div class="form-group"><label>Message</label><textarea rows="5" required></textarea></div>
+                    <button type="submit" class="cta-button" style="width:100%">Send Message</button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <p>© 2025 LC Language Club</p>
+        </div>
+    </footer>
+
+    <script>
+        const contentData = [
+            { type: 'Magazine', title: 'Aralik Issue', meta: 'Dec 2025', desc: 'Winter Solstice collection.', color: '#f5f5dc' },
+            { type: 'Blog', title: 'Storytelling Techniques', meta: 'Dec 2025', desc: 'Analyzing character development.', color: '#434343' }
+        ];
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-links a').forEach(l => l.classList.remove('active'));
+
+            const target = document.getElementById(pageId);
+            if (target) {
+                target.classList.add('active');
+                const navItem = document.getElementById('nav-' + pageId);
+                if (navItem) navItem.classList.add('active');
+            }
+            
+            if (pageId === 'publications') renderPublications();
+            window.scrollTo(0, 0);
+        }
+
+        function renderPublications() {
+            const container = document.getElementById('pub-container');
+            if (!container) return;
+            container.innerHTML = contentData.map(item => `
+                <div class="card">
+                    <div style="height:150px; background:${item.color}"></div>
+                    <div class="card-content">
+                        <span class="pub-tag">${item.type}</span>
+                        <h3 style="margin: 10px 0; color:#274f8b;">${item.title}</h3>
+                        <p style="font-size:0.9rem; margin-bottom:15px; color:#555;">${item.desc}</p>
+                        <a class="cta-button" style="font-size:0.8rem; text-decoration:none; padding: 0.6rem 1.2rem;">Read More</a>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleAnnouncement(header) {
+            header.parentElement.classList.toggle('active');
+        }
+
+        window.onload = function() {
+            renderPublications();
+        };
+    </script>
+</body>
+</html>
